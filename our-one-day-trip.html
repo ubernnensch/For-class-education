@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our One-Day Trip</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF4F8; --panel:#FFFFFF; --ink:#14293D; --ink2:#4B6277; --line:#D3DFE8; --soft:#F5F9FC;
+  --water:#B9DCF2; --land:#E3EEE6; --zone:#D5E6DA; --zonetxt:#4E6B5A;
+  --hotel:#D9482B; --landmark:#2467A8; --food:#D98A1B;
+  --walk:#23855C; --transit:#3B58D6; --ok:#1E8A5A; --warn:#A96A0B; --bad:#C23B22;
+  --okbg:#E2F4EA; --warnbg:#FFF1D6; --badbg:#FBE3DE; --selbg:#FFF6D9;
+  --shadow:0 1px 0 rgba(20,41,61,.05), 0 6px 18px -10px rgba(20,41,61,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1A26; --panel:#16283A; --ink:#E7EFF6; --ink2:#9FB5C8; --line:#29405A; --soft:#1B3045;
+    --water:#1E4A69; --land:#1B3A2E; --zone:#234A38; --zonetxt:#A9D1B9;
+    --hotel:#FF7F60; --landmark:#77B4F0; --food:#F2B24C;
+    --walk:#4CC792; --transit:#93A8FF; --ok:#59D39A; --warn:#F2B24C; --bad:#FF8C75;
+    --okbg:#173B2D; --warnbg:#3F3216; --badbg:#442119; --selbg:#3C3618;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 6px 18px -10px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1A26; --panel:#16283A; --ink:#E7EFF6; --ink2:#9FB5C8; --line:#29405A; --soft:#1B3045;
+  --water:#1E4A69; --land:#1B3A2E; --zone:#234A38; --zonetxt:#A9D1B9;
+  --hotel:#FF7F60; --landmark:#77B4F0; --food:#F2B24C;
+  --walk:#4CC792; --transit:#93A8FF; --ok:#59D39A; --warn:#F2B24C; --bad:#FF8C75;
+  --okbg:#173B2D; --warnbg:#3F3216; --badbg:#442119; --selbg:#3C3618;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 6px 18px -10px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:15px;line-height:1.55}
+h1,h2,h3{font-family:"Jua","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400;margin:0;letter-spacing:.01em}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,.node:focus-visible,.pcard:focus-visible{outline:3px solid var(--landmark);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px}
+textarea{width:100%;resize:vertical;min-height:64px}
+a{color:var(--landmark)}
+.wrap{max-width:1440px;margin:0 auto;padding:14px 16px 40px}
+
+/* top bar */
+.top{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;background:var(--panel);border-radius:18px;padding:12px 18px;box-shadow:var(--shadow);margin-bottom:14px}
+.brand h1{font-size:28px;line-height:1.1}
+.brand p{margin:0;color:var(--ink2);font-size:13px}
+.gname{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2)}
+.gname input{width:160px;font-weight:700;color:var(--ink)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1.5px solid var(--line);background:var(--soft);border-radius:999px;padding:6px 14px;font-weight:500}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.facts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--ink2)}
+.chip{display:inline-block;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;border:1.5px solid currentColor}
+.chip.demo{color:var(--warn);background:var(--warnbg)}
+.chip.real{color:var(--ok);background:var(--okbg)}
+.viewbtns{margin-left:auto;display:flex;gap:8px}
+.btn{border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:7px 14px;font-weight:500}
+.btn:hover{border-color:var(--ink2)}
+.btn.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.btn.primary:disabled{opacity:.4;cursor:not-allowed}
+.btn.small{padding:3px 9px;font-size:13px;border-radius:8px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+
+/* main grid */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}
+.panel{background:var(--panel);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+.panel h2{font-size:19px;margin-bottom:8px}
+.panel h3{font-size:16px;margin:12px 0 6px}
+#placeList{position:sticky;top:8px;max-height:calc(100vh - 20px);overflow:auto}
+.group-title{font-size:13px;font-weight:700;color:var(--ink2);margin:10px 0 6px}
+.pcard{display:block;width:100%;text-align:left;border:1.5px solid var(--line);border-left-width:6px;border-radius:12px;background:var(--panel);padding:8px 10px;margin-bottom:8px}
+.pcard.hotel{border-left-color:var(--hotel)} .pcard.landmark{border-left-color:var(--landmark)} .pcard.food{border-left-color:var(--food)}
+.pcard.isfrom{background:var(--okbg);border-color:var(--walk)} .pcard.isto{background:var(--selbg);border-color:var(--food)}
+.pcard .ph{display:flex;gap:8px;align-items:flex-start}
+.pcard .ico{font-size:24px;line-height:1.1}
+.pcard .nm{font-weight:700;font-size:14px;line-height:1.3}
+.pcard .en{font-size:12px;color:var(--ink2);line-height:1.3}
+.pcard .meta{font-size:12px;color:var(--ink2);margin-top:4px}
+.pcard .intro{font-size:13px;margin-top:4px}
+.pcard .act{font-size:13px;font-weight:700;margin-top:3px;color:var(--ink)}
+.pcard .src{font-size:11.5px;margin-top:4px;color:var(--ink2)}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:0 6px;margin-right:4px;background:var(--soft);border:1px solid var(--line)}
+
+/* map */
+.mapbox{position:relative}
+.map{width:100%;height:auto;display:block;border-radius:16px}
+.mapbg{fill:var(--land)}
+.riv{fill:none;stroke:var(--water);stroke-linecap:round}
+.bay{fill:var(--water)}
+.zone rect{fill:var(--zone);opacity:.85}
+.zone text{fill:var(--zonetxt);font-size:12px;font-weight:700}
+.wlabel{fill:var(--ink2);font-size:12px;font-style:italic;opacity:.85}
+.mapstamp rect{fill:var(--panel);stroke:var(--ink2);stroke-dasharray:4 3}
+.mapstamp text{fill:var(--ink);font-size:13px;font-weight:700}
+.node{cursor:pointer}
+.node circle.dot{stroke:var(--panel);stroke-width:3}
+.node.hotel circle.dot{fill:var(--hotel)} .node.landmark circle.dot{fill:var(--landmark)} .node.food circle.dot{fill:var(--food)}
+.node .em{font-size:16px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.node .nl{font-size:12px;font-weight:700;fill:var(--ink);paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.node .ring{fill:none;stroke-width:4;opacity:0}
+.node.isfrom .ring{stroke:var(--walk);opacity:1} .node.isto .ring{stroke:var(--bad);opacity:1}
+.node .pill rect{fill:var(--ink)} .node .pill text{fill:var(--panel);font-size:11px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.node:hover circle.dot{stroke:var(--ink)}
+.ordb circle{fill:var(--ink);stroke:var(--panel);stroke-width:2} .ordb text{fill:var(--panel);font-size:11px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.selline{stroke:var(--ink);stroke-width:2.5;stroke-dasharray:7 5}
+.orderline{fill:none;stroke:var(--ink2);stroke-width:2.5;stroke-dasharray:3 6;stroke-linecap:round}
+.ahead{fill:var(--ink)}
+.mapnote{font-size:12px;color:var(--ink2);margin:6px 2px 0}
+
+/* ticket */
+#ticket{margin-top:12px}
+.hint{margin:0;padding:12px 14px;background:var(--soft);border-radius:12px;border:1.5px dashed var(--line);font-size:14px}
+.msg{margin:0 0 8px;padding:8px 12px;border-radius:10px;font-size:13.5px;background:var(--warnbg);color:var(--ink);border:1.5px solid var(--warn)}
+.msg.ok{background:var(--okbg);border-color:var(--ok)}
+.ticket{position:relative;background:var(--panel);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);border:2px solid var(--ink)}
+.ticket::before,.ticket::after{content:"";position:absolute;top:56px;width:18px;height:18px;border-radius:50%;background:var(--bg);border:2px solid var(--ink)}
+.ticket::before{left:-11px;clip-path:inset(0 0 0 50%)} .ticket::after{right:-11px;clip-path:inset(0 50% 0 0)}
+.tk-route{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-bottom:12px;border-bottom:2px dashed var(--line)}
+.tk-place{font-weight:700;font-size:16px;padding:3px 10px;border-radius:10px}
+.tk-place.from{background:var(--okbg)} .tk-place.to{background:var(--selbg)}
+.tk-arrow{font-size:22px;font-weight:700}
+.tk-modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 6px}
+.mode{border:2px solid var(--line);border-radius:14px;background:var(--soft);padding:10px 12px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.mode .lb{font-weight:700;font-size:14px}
+.mode .tm{font-family:"Jua","Noto Sans KR",sans-serif;font-size:26px;line-height:1.2}
+.mode .tm.small{font-family:"Noto Sans KR",sans-serif;font-size:14px;font-weight:700;color:var(--warn)}
+.mode.walk .lb{color:var(--walk)} .mode.transit .lb{color:var(--transit)}
+.mode.on.walk{border-color:var(--walk);background:var(--okbg)} .mode.on.transit{border-color:var(--transit);background:var(--soft);box-shadow:inset 0 0 0 2px var(--transit)}
+.mode:disabled{opacity:.55;cursor:not-allowed}
+.tk-basis{font-size:12px;color:var(--ink2);margin:2px 0 8px}
+.connect{font-size:13.5px;background:var(--warnbg);border-radius:10px;padding:8px 12px;margin:6px 0 10px;border-left:5px solid var(--warn)}
+.tk-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* schedule */
+#schedule .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 10px}
+.stat{background:var(--soft);border-radius:10px;padding:6px 8px}
+.stat b{display:block;font-size:11.5px;color:var(--ink2);font-weight:500}
+.stat span{font-weight:700;font-size:15px}
+.stat.wide{grid-column:span 4;background:var(--okbg)} .stat.wide.late{background:var(--badbg)} .stat.wide.unk{background:var(--warnbg)}
+.startrow,.endrow{display:flex;gap:8px;align-items:center;font-weight:700;padding:6px 10px;background:var(--soft);border-radius:10px}
+.stops{list-style:none;margin:8px 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.stop{border:1.5px solid var(--line);border-left-width:6px;border-radius:12px;padding:8px 10px}
+.stop.landmark{border-left-color:var(--landmark)} .stop.food{border-left-color:var(--food)} .stop.free{border-left-color:var(--walk);background:var(--okbg)}
+.stop.ret{border-left-color:var(--hotel)}
+.sh{display:flex;gap:8px;align-items:center}
+.sh .n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--panel);font-size:12px;font-weight:700;display:grid;place-items:center}
+.sh .t{flex:1;min-width:0;font-weight:700;line-height:1.3;font-size:14px}
+.sh .t small{display:block;font-weight:400;color:var(--ink2);font-size:12px}
+.sh .ctl{display:flex;gap:3px}
+.ib{border:1.5px solid var(--line);background:var(--panel);border-radius:8px;width:28px;height:28px;line-height:1;padding:0}
+.ib:disabled{opacity:.35;cursor:not-allowed}
+.leg,.visit,.wait{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;font-size:13px}
+.leg .lbl,.visit .lbl{color:var(--ink2);min-width:34px}
+.seg{border:1.5px solid var(--line);border-radius:999px;background:var(--panel);padding:1px 10px;font-size:12.5px;font-weight:500}
+.seg.walk.on{border-color:var(--walk);background:var(--okbg);font-weight:700} .seg.transit.on{border-color:var(--transit);box-shadow:inset 0 0 0 1px var(--transit);font-weight:700}
+.seg.bad{color:var(--warn)}
+.seg:disabled{opacity:.5;cursor:not-allowed}
+.tm2{margin-left:auto;font-variant-numeric:tabular-nums;font-weight:700}
+.step{display:inline-flex;align-items:center;gap:4px}
+.step b{min-width:44px;text-align:center}
+.wait{color:var(--warn);font-weight:700}
+.warnline{margin-top:4px;font-size:12.5px;color:var(--warn);font-weight:700}
+.empty{padding:14px;border:1.5px dashed var(--line);border-radius:12px;color:var(--ink2);font-size:14px;text-align:center}
+.sched-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;font-size:13px}
+
+/* mission */
+.mlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.mlist li{display:flex;gap:8px;align-items:center;font-size:13.5px}
+.mlist .q{flex:1}
+.pill2{border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;white-space:nowrap;border:1.5px solid currentColor}
+.pill2.ok{color:var(--ok);background:var(--okbg)} .pill2.todo{color:var(--ink2);background:var(--soft)} .pill2.bad{color:var(--bad);background:var(--badbg)}
+.banner{border-radius:12px;padding:8px 12px;font-weight:700;margin:8px 0}
+.banner.ok{background:var(--okbg);color:var(--ok)} .banner.todo{background:var(--warnbg);color:var(--warn)} .banner.bad{background:var(--badbg);color:var(--bad)}
+.latemsg{margin:8px 0 0;font-size:13.5px;padding:8px 12px;border-radius:10px;background:var(--badbg);border-left:5px solid var(--bad)}
+
+/* compare */
+table.tbl{border-collapse:collapse;width:100%;font-size:13.5px}
+table.tbl th,table.tbl td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}
+table.tbl th{color:var(--ink2);font-weight:500;font-size:12.5px}
+.altbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+
+/* bottom */
+.bottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:16px;margin-top:16px;align-items:start}
+.full{margin-top:16px}
+.phrase{border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;margin-bottom:8px;background:var(--panel)}
+.phrase.hot{border-color:var(--landmark);background:var(--soft);box-shadow:inset 4px 0 0 var(--landmark)}
+.phrase .en{font-family:"Jua","Noto Sans KR",sans-serif;font-size:20px;line-height:1.3}
+.phrase .sit{font-size:12px;color:var(--ink2)}
+.ctxbox{font-size:13px;background:var(--soft);border-radius:10px;padding:6px 10px;margin-bottom:8px}
+.mem{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;border-bottom:1px solid var(--line);padding:10px 0}
+.mem .who{display:flex;flex-direction:column;gap:6px}
+.mem .who input,.mem .who select{width:100%}
+table.eval td,table.eval th{text-align:center} table.eval td:first-child,table.eval th:first-child{text-align:left}
+table.eval input{width:20px;height:20px;padding:0}
+details.files{margin-top:16px}
+details.files>summary{cursor:pointer;font-family:"Jua","Noto Sans KR",sans-serif;font-size:19px;padding:10px 14px;background:var(--panel);border-radius:16px;box-shadow:var(--shadow)}
+details.files[open]>summary{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.filesbody{background:var(--panel);border-radius:0 0 16px 16px;padding:12px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.filesbody textarea{min-height:90px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.small{font-size:12.5px;color:var(--ink2)}
+
+/* present / print */
+#presentView,#printView{display:none}
+[data-view="present"] .edit-only,[data-view="print"] .edit-only{display:none !important}
+[data-view="present"] #presentView{display:block}
+[data-view="print"] #printView{display:block}
+[data-view="present"] .top .facts .hideinpresent{display:none}
+.pv-head{display:flex;flex-wrap:wrap;gap:10px 20px;align-items:baseline;margin-bottom:12px}
+.pv-head h2{font-size:38px}
+.pv-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;align-items:start}
+.pv-tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pv-tl li{display:grid;grid-template-columns:130px 1fr;gap:10px;font-size:19px;padding:7px 12px;border-radius:12px;background:var(--soft);border-left:8px solid var(--line)}
+.pv-tl li.move{border-left-color:var(--transit)} .pv-tl li.stay-landmark{border-left-color:var(--landmark)} .pv-tl li.stay-food{border-left-color:var(--food)} .pv-tl li.wait{border-left-color:var(--warn)} .pv-tl li.free{border-left-color:var(--walk)} .pv-tl li.home{border-left-color:var(--hotel)}
+.pv-tl .tt{font-weight:700;font-variant-numeric:tabular-nums}
+.pv-tl .cat{display:block;font-size:13px;color:var(--ink2)}
+.pv-sum{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.pv-sum .stat{font-size:16px;padding:8px 14px}
+.pv-sum .stat span{font-size:20px}
+.pv-sent{margin-top:14px}
+.pv-sent blockquote{margin:0 0 10px;padding:8px 14px;border-left:6px solid var(--landmark);background:var(--soft);border-radius:0 12px 12px 0;font-family:"Jua","Noto Sans KR",sans-serif;font-size:22px;line-height:1.4;white-space:pre-wrap}
+.pv-sent .who{font-family:"Noto Sans KR",sans-serif;font-size:13px;color:var(--ink2)}
+.printpage{background:var(--panel);padding:18px 22px;border-radius:16px;box-shadow:var(--shadow)}
+.printpage h2{font-size:26px}
+
+@media (max-width:1100px){
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .grid .center{order:1} #schedule{order:2}
+  .bottom,.filesbody,.pv-grid{grid-template-columns:minmax(0,1fr)}
+  .viewbtns{margin-left:0}
+}
+@media (max-width:560px){
+  .wrap{padding:10px 10px 30px} .brand h1{font-size:24px}
+  .tk-modes{grid-template-columns:1fr} .mem{grid-template-columns:1fr}
+  .pv-tl li{grid-template-columns:1fr;font-size:17px} .pv-head h2{font-size:28px}
+  .node .nl{font-size:13px}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .noprint{display:none !important}
+  .printpage{box-shadow:none;padding:0}
+  [data-view="print"] .top{display:none}
+  :root{--panel:#fff;--soft:#f3f3f3;--ink:#000;--ink2:#333;--line:#bbb}
+}
+@media (prefers-reduced-motion:no-preference){
+  .mode,.pcard,.btn,.seg{transition:background-color .15s,border-color .15s}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="app" data-view="edit">
+  <header class="top">
+    <div class="brand"><h1>Our One-Day Trip</h1><p>모둠이 함께 만드는 하루 여행 계획</p></div>
+    <label class="gname">모둠 이름 <input id="groupName" maxlength="30" placeholder="우리 모둠"></label>
+    <nav class="tabs" id="cityTabs" aria-label="여행 도시 선택"></nav>
+    <div class="facts"><span>출발 09:00</span><span>복귀 제한 18:00</span><span id="basisChip"></span></div>
+    <div class="viewbtns noprint" id="viewBtns"></div>
+  </header>
+
+  <div class="edit-only">
+    <div class="grid">
+      <section class="center">
+        <div class="panel"><div class="mapbox" id="mapWrap"></div><p class="mapnote" id="mapNote"></p></div>
+        <div id="ticket" aria-live="polite"></div>
+        <div class="panel" id="compare" style="margin-top:12px"></div>
+      </section>
+      <aside id="schedule">
+        <div class="panel" id="schedPanel"></div>
+      </aside>
+    </div>
+
+  </div>
+
+  <section id="presentView" aria-label="발표 보기"></section>
+  <section id="printView" aria-label="인쇄용 일정표"></section>
+</div>
+
+<script>
+(function(){
+'use strict';
+var START=540, LIMIT=1080, STORE='oneDayTrip.v1';
+function $(s,r){return (r||document).querySelector(s);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pad(n){return (n<10?'0':'')+n;}
+function hm(m){return m==null?'—':pad(Math.floor(m/60))+':'+pad(m%60);}
+function ko(m){var h=Math.floor(m/60),mi=m%60,ap=h<12?'오전':'오후',h12=h%12||12;return ap+' '+h12+'시'+(mi?' '+mi+'분':'');}
+function dur(m){var h=Math.floor(m/60),mi=m%60;return h?(mi?h+'시간 '+mi+'분':h+'시간'):mi+'분';}
+function segLabel(v){return typeof v==='number'?v+'분':(v==='none'?'경로 없음':'확인 필요');}
+function segLong(v){return typeof v==='number'?v+'분':(v==='none'?'이용 가능한 경로 없음':'이동시간 확인 필요');}
+function hash(s){var h=0;for(var i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))>>>0;}return h;}
+var MODE_NAME={walk:'도보',transit:'대중교통'}, MODE_ICO={walk:'🚶',transit:'🚇'};
+
+/* ---------- data ---------- */
+function P(id,type,ko_,en,short,icon,area,intro,act,stay,x,y,src,extra){
+  var o={id:id,type:type,ko:ko_,en:en,short:short,icon:icon,area:area,intro:intro,act:act,stay:stay,x:x,y:y,src:src||null};
+  for(var k in (extra||{})) o[k]=extra[k];
+  return o;
+}
+var SCOPE_DEF='수업용 체류시간 안에서 둘러보기';
+var CITIES=[
+{id:'tokyo',country:'일본',name:'도쿄',en:'Tokyo',flag:'🇯🇵',k:0.28,
+ intent:'숙소 주변의 장소와 우에노 지역을 비교하면서 가까운 장소를 묶어 방문하는 방법을 찾아 보세요.',
+ deco:'<path class="riv" d="M440,-10 C475,90 430,180 462,262 S452,400 472,450" stroke-width="34"/>'+
+  '<g class="zone"><rect x="130" y="34" width="215" height="120" rx="30"/><text x="146" y="54">우에노</text></g>'+
+  '<g class="zone"><rect x="180" y="182" width="270" height="206" rx="36"/><text x="196" y="202">아사쿠사</text></g>'+
+  '<g class="zone"><rect x="488" y="238" width="120" height="110" rx="30"/><text x="502" y="258">스미다구</text></g>'+
+  '<text class="wlabel" x="472" y="150" transform="rotate(88 472 150)">스미다강</text>',
+ places:[
+  P('h','hotel','리치몬드 호텔 프리미어 아사쿠사','Richmond Hotel Premier Asakusa','숙소','🏨','아사쿠사','하루 여행을 출발하고 돌아오는 숙소예요.','Start and end the day here.',0,350,300,{label:'숙소 공식 안내',url:'https://richmondhotel.jp/asakusa-international/'}),
+  P('l1','landmark','센소지','Sensō-ji Temple','센소지','⛩️','아사쿠사','아사쿠사에 있는 도쿄의 대표적인 사찰이에요.','Visit a temple.',60,290,235,{label:'도쿄 공식 관광 안내',url:'https://www.gotokyo.org/en/see-and-do/attractions/'},{scope:SCOPE_DEF}),
+  P('l2','landmark','도쿄 스카이트리','Tokyo Skytree','스카이트리','🗼','스미다구','높은 곳에서 도시를 내려다볼 수 있는 탑이에요.','See the city from above.',90,545,290,{label:'도쿄 공식 관광 안내',url:'https://www.gotokyo.org/en/see-and-do/attractions/'},{scope:SCOPE_DEF}),
+  P('l3','landmark','우에노 공원','Ueno Park','우에노 공원','🌳','우에노','산책하기 좋은 넓은 공원이에요.','Walk in the park.',60,200,105,{label:'도쿄 공식 관광 안내',url:'https://www.gotokyo.org/en/see-and-do/attractions/'},{scope:SCOPE_DEF}),
+  P('l4','landmark','도쿄국립박물관','Tokyo National Museum','국립박물관','🏛️','우에노','일본의 미술을 볼 수 있는 박물관이에요.','See Japanese art.',120,295,72,{label:'도쿄 공식 관광 안내',url:'https://www.gotokyo.org/en/see-and-do/attractions/'},{scope:SCOPE_DEF}),
+  P('f1','food','다이코쿠야 텐푸라 본점','Daikokuya Tempura','다이코쿠야','🍤','아사쿠사','튀김을 올린 덮밥을 먹는 음식점이에요.','Tempura rice bowl',60,235,285,{label:'음식점 공식 사이트',url:'https://www.tempura.co.jp/english/'},{branch:'본점',cuisine:'튀김 덮밥'}),
+  P('f2','food','아사쿠사 라멘 요로이야','Asakusa Ramen Yoroiya','요로이야','🍜','아사쿠사','라멘을 먹는 음식점이에요.','Ramen',60,400,225,{label:'음식점 공식 사이트',url:'https://yoroiya.jp/'},{branch:'아사쿠사',cuisine:'라멘'}),
+  P('f3','food','아사쿠사 이마한 고쿠사이 거리 본점','Asakusa Imahan Kokusai Street','이마한','🥘','아사쿠사','스키야키를 먹는 음식점이에요.','Sukiyaki',60,300,350,{label:'음식점 공식 사이트',url:'https://www.asakusaimahan.co.jp/en/kokusai'},{branch:'고쿠사이 거리 본점',cuisine:'스키야키'}),
+  P('f4','food','아사쿠사 무기토로 본점','Asakusa Mugitoro','무기토로','🍚','아사쿠사','보리밥에 마즙을 얹어 먹는 음식점이에요.','Barley rice with grated yam',60,405,350,{label:'음식점 공식 사이트',url:'https://www.mugitoro.co.jp/en/honten/'},{branch:'본점',cuisine:'보리밥과 마즙'})
+ ]},
+{id:'london',country:'영국',name:'런던',en:'London',flag:'🇬🇧',k:0.26,
+ intent:'숙소 인근, 도심 북쪽, 동쪽의 장소를 비교하면서 방문 순서에 따라 이동시간이 어떻게 달라지는지 살펴보세요.',
+ deco:'<path class="riv" d="M-10,245 C110,262 200,222 300,244 S470,270 560,236 S650,232 650,232" stroke-width="30"/>'+
+  '<g class="zone"><rect x="60" y="120" width="140" height="110" rx="30"/><text x="74" y="140">웨스트민스터</text></g>'+
+  '<g class="zone"><rect x="205" y="40" width="230" height="150" rx="30"/><text x="221" y="60">블룸즈버리 · 코벤트 가든</text></g>'+
+  '<g class="zone"><rect x="170" y="274" width="380" height="96" rx="30"/><text x="186" y="294">사우스뱅크</text></g>'+
+  '<text class="wlabel" x="30" y="266">템스강</text>',
+ places:[
+  P('h','hotel','프리미어 인 런던 카운티 홀','Premier Inn London County Hall','숙소','🏨','사우스뱅크','하루 여행을 출발하고 돌아오는 숙소예요.','Start and end the day here.',0,215,325,{label:'숙소 공식 안내',url:'https://www.premierinn.com/gb/en/hotels/england/greater-london/london/london-county-hall.html'}),
+  P('l1','landmark','런던 아이','London Eye','런던 아이','🎡','사우스뱅크','커다란 관람차를 타는 랜드마크예요.','Ride the observation wheel.',60,310,300,{label:'런던 공식 관광 안내',url:'https://www.visitlondon.com/things-to-do/sightseeing/london-attraction'},{scope:SCOPE_DEF}),
+  P('l2','landmark','영국박물관','British Museum','영국박물관','🏛️','블룸즈버리','세계 여러 곳의 유물을 볼 수 있는 박물관이에요.','Explore the museum.',120,300,88,{label:'런던 공식 관광 안내',url:'https://www.visitlondon.com/things-to-do/sightseeing/london-attraction'},{scope:SCOPE_DEF}),
+  P('l3','landmark','버킹엄궁','Buckingham Palace','버킹엄궁','🏰','웨스트민스터','궁전을 바깥에서 바라보는 랜드마크예요.','See the palace from outside.',45,110,185,{label:'런던 공식 관광 안내',url:'https://www.visitlondon.com/things-to-do/sightseeing/london-attraction'},{scope:'내부 입장이 아닌 외관 관람'}),
+  P('l4','landmark','타워브리지','Tower Bridge','타워브리지','🌉','템스강 동쪽','템스강 위의 유명한 다리예요.','Walk across the bridge.',60,575,236,{label:'런던 공식 관광 안내',url:'https://www.visitlondon.com/things-to-do/sightseeing/london-attraction'},{scope:SCOPE_DEF}),
+  P('f1','food','디슈움 코벤트 가든','Dishoom Covent Garden','디슈움','🍛','코벤트 가든','인도 요리를 먹는 음식점이에요.','Indian dishes',60,365,165,{label:'음식점 선정 참고',url:'https://www.visitlondon.com/things-to-do/food-and-drink/restaurant/best-family-restaurants'},{branch:'Covent Garden 지점',cuisine:'인도 요리'}),
+  P('f2','food','포피스 소호','Poppies Soho','포피스','🐟','소호','피시 앤드 칩스를 먹는 음식점이에요.','Fish and chips',60,228,152,{label:'음식점 선정 참고',url:'https://www.visitlondon.com/things-to-do/food-and-drink/restaurant/best-family-restaurants'},{branch:'Soho 지점',cuisine:'피시 앤드 칩스'}),
+  P('f3','food','피자익스프레스 로열 페스티벌 홀','PizzaExpress Royal Festival Hall','피자익스프레스','🍕','사우스뱅크','피자를 먹는 음식점이에요.','Pizza',60,400,325,{label:'지점 안내',url:'https://www.pizzaexpress.com/london-royal-festival-hall'},{branch:'Royal Festival Hall 지점',cuisine:'피자'}),
+  P('f4','food','더 리얼 그릭 뱅크사이드','The Real Greek Bankside','리얼 그릭','🥙','뱅크사이드','그리스 요리를 먹는 음식점이에요.','Greek dishes',60,495,315,{label:'지점 안내',url:'https://www.therealgreek.com/restaurants/'},{branch:'Bankside 지점',cuisine:'그리스 요리'})
+ ]},
+{id:'paris',country:'프랑스',name:'파리',en:'Paris',flag:'🇫🇷',k:0.28,
+ intent:'유명한 장소를 모두 넣고 싶어도 관람시간과 이동시간을 함께 보고 우선순위를 정해 보세요.',
+ deco:'<path class="riv" d="M-10,250 C100,230 190,300 290,265 C380,235 470,290 650,262" stroke-width="28"/>'+
+  '<g class="zone"><rect x="350" y="22" width="150" height="100" rx="28"/><text x="364" y="42">몽마르트르</text></g>'+
+  '<g class="zone"><rect x="470" y="160" width="130" height="90" rx="28"/><text x="484" y="180">마레</text></g>'+
+  '<g class="zone"><rect x="270" y="292" width="140" height="80" rx="28"/><text x="284" y="312">생제르맹데프레</text></g>'+
+  '<g class="zone"><rect x="50" y="338" width="150" height="70" rx="26"/><text x="64" y="358">15구</text></g>'+
+  '<text class="wlabel" x="40" y="236">센강</text>',
+ places:[
+  P('h','hotel','이비스 파리 투르 에펠 캉브론 15구','ibis Paris Tour Eiffel Cambronne 15ème','숙소','🏨','15구 캉브론','하루 여행을 출발하고 돌아오는 숙소예요.','Start and end the day here.',0,105,375,{label:'숙소 공식 안내',url:'https://all.accor.com/hotel/1400/index.en.shtml'}),
+  P('l1','landmark','에펠탑','Eiffel Tower','에펠탑','🗼','7구 센강 남쪽','파리를 대표하는 탑이에요. 사진 찍기 좋아요.','See the tower and take photos.',60,175,315,{label:'파리 공식 관광 안내',url:'https://parisjetaime.com/eng/article/Paris-10-must-sees-a992'},{scope:'외관 관람 기준(탑승·입장 대기시간은 별도)'}),
+  P('l2','landmark','루브르박물관','Louvre Museum','루브르','🖼️','1구','세계에서 유명한 작품이 많은 박물관이에요.','Explore the museum.',120,340,212,{label:'파리 공식 관광 안내',url:'https://parisjetaime.com/eng/article/Paris-10-must-sees-a992'},{scope:SCOPE_DEF}),
+  P('l3','landmark','개선문','Arc de Triomphe','개선문','🏛️','8구','커다란 기념문을 바깥에서 바라봐요.','See the monument from outside.',45,170,150,{label:'파리 공식 관광 안내',url:'https://parisjetaime.com/eng/article/Paris-10-must-sees-a992'},{scope:'외관 관람 기준(입장 대기시간은 별도)'}),
+  P('l4','landmark','사크레쾨르 대성당','Sacré-Cœur','사크레쾨르','⛪','몽마르트르','언덕 위에서 파리 풍경을 볼 수 있어요.','Visit Montmartre and enjoy the view.',90,415,62,{label:'파리 공식 관광 안내',url:'https://parisjetaime.com/eng/article/Paris-10-must-sees-a992'},{scope:SCOPE_DEF}),
+  P('f1','food','부이용 샤르티에 그랑 불바르','Bouillon Chartier Grands Boulevards','샤르티에','🥘','9구 그랑 불바르','프랑스 요리를 먹는 음식점이에요.','French dishes',60,400,145,{label:'음식점 공식 사이트',url:'https://www.bouillon-chartier.com/bouillon-chartier-grands-boulevards/'},{branch:'Grands Boulevards 지점',cuisine:'프랑스 요리'}),
+  P('f2','food','브레이즈 카페 르 마레','Breizh Café Le Marais','브레이즈 카페','🥞','마레','짭짤한 갈레트를 먹는 음식점이에요.','Savory galettes',60,530,205,{label:'음식점 공식 사이트',url:'https://www.breizhcafe.com/le-marais'},{branch:'Le Marais 지점',cuisine:'갈레트'}),
+  P('f3','food','레 되 마고','Les Deux Magots','레 되 마고','☕','생제르맹데프레','카페에서 점심을 먹어요.','Café lunch',60,335,335,{label:'음식점 안내',url:'https://parisjetaime.com/restaurant-paris/100254/Les-Deux-Magots'},{branch:'생제르맹데프레',cuisine:'카페 점심'}),
+  P('f4','food','앙젤리나 리볼리','Angelina Rivoli','앙젤리나','🥐','1구 리볼리가','점심과 디저트 빵을 먹는 곳이에요.','Lunch and pastries',60,262,182,{label:'지점 안내',url:'https://salon-de-the.angelina-paris.fr/en/pastry-shop/rue-de-rivoli-paris-1/'},{branch:'Rivoli 지점',cuisine:'점심과 페이스트리'})
+ ]},
+{id:'singapore',country:'싱가포르',name:'싱가포르',en:'Singapore',flag:'🇸🇬',k:0.3,
+ intent:'도심의 식당과 동쪽 카통 지역의 식당을 비교하면서 먹고 싶은 음식 때문에 이동시간을 더 쓸지 의논해 보세요.',
+ deco:'<path class="bay" d="M410,240 C440,215 530,225 555,270 C575,310 540,350 480,350 C430,350 395,300 410,240Z"/>'+
+  '<path class="riv" d="M405,255 C360,245 330,235 300,225 S220,200 180,215" stroke-width="14"/>'+
+  '<g class="zone"><rect x="90" y="288" width="210" height="112" rx="28"/><text x="104" y="308">차이나타운</text></g>'+
+  '<g class="zone"><rect x="240" y="78" width="140" height="90" rx="28"/><text x="254" y="98">벤쿨렌</text></g>'+
+  '<g class="zone"><rect x="545" y="292" width="92" height="84" rx="24"/><text x="556" y="312">동쪽 카통</text></g>'+
+  '<text class="wlabel" x="452" y="292">마리나 베이</text>',
+ places:[
+  P('h','hotel','이비스 싱가포르 온 벤쿨렌','ibis Singapore on Bencoolen','숙소','🏨','벤쿨렌','하루 여행을 출발하고 돌아오는 숙소예요.','Start and end the day here.',0,305,125,{label:'숙소 공식 위치 안내',url:'https://www.ibissingaporebencoolen.com/where-we-are/'}),
+  P('l1','landmark','머라이언 공원','Merlion Park','머라이언 공원','🦁','마리나 베이','머라이언 동상과 사진을 찍는 곳이에요.','Take photos with the Merlion.',45,392,250,{label:'싱가포르 공식 관광 안내',url:'https://www.visitsingapore.com/see-do-singapore/recreation-leisure/viewpoints/merlion-park/'},{scope:SCOPE_DEF}),
+  P('l2','landmark','가든스 바이 더 베이','Gardens by the Bay','가든스 바이 더 베이','🌿','마리나 베이','야외 정원을 둘러보는 곳이에요.','Explore the outdoor gardens.',90,480,388,{label:'관광청 여행 자료',url:'https://tih.stb.gov.sg/content/dam/tih/01_Documents/The_Complete_Guide_for_Travel_Agents.pdf'},{scope:'야외 정원 관람'}),
+  P('l3','landmark','싱가포르 플라이어','Singapore Flyer','플라이어','🎡','마리나 베이','관람차에서 도시를 바라봐요.','See the city from the wheel.',60,552,212,{label:'관광청 여행 자료',url:'https://tih.stb.gov.sg/content/dam/tih/01_Documents/The_Complete_Guide_for_Travel_Agents.pdf'},{scope:SCOPE_DEF}),
+  P('l4','landmark','차이나타운','Chinatown','차이나타운','🏮','차이나타운','거리를 걸으며 둘러보는 곳이에요.','Explore the streets.',60,205,335,{label:'관광청 여행 자료',url:'https://tih.stb.gov.sg/content/dam/tih/01_Documents/The_Complete_Guide_for_Travel_Agents.pdf'},{scope:'범위가 넓은 지역 — 이동시간 조사 때 대표 도착 지점 하나를 정해 고정'}),
+  P('f1','food','티엔티엔 하이나니즈 치킨라이스 맥스웰 푸드센터','Tian Tian Hainanese Chicken Rice','티엔티엔','🍗','맥스웰 푸드센터','치킨라이스를 먹는 음식점이에요.','Chicken rice',60,135,372,null,{branch:'Maxwell Food Centre',cuisine:'치킨라이스'}),
+  P('f2','food','쏭파 바쿠테 뉴브리지로','Song Fa Bak Kut Teh','쏭파','🍲','11 New Bridge Road','돼지갈비 수프를 먹는 음식점이에요.','Pork rib soup',60,240,262,{label:'공식 자료',url:'https://songfa.com.sg/blogs/experience-song-fa/song-fa-x-wheniwasfour'},{branch:'11 New Bridge Road',cuisine:'돼지갈비 수프'}),
+  P('f3','food','점보 씨푸드 리버사이드 포인트','JUMBO Seafood','점보 씨푸드','🦀','리버사이드 포인트','해산물 요리를 먹는 음식점이에요.','Seafood',60,285,198,{label:'지점 안내',url:'https://www.jumboseafood.com.sg/en/riverside-point'},{branch:'Riverside Point',cuisine:'해산물'}),
+  P('f4','food','328 카통 락사','328 Katong Laksa','카통 락사','🍜','East Coast Road','락사를 먹는 음식점이에요.','Laksa',60,590,335,null,{branch:'East Coast Road',cuisine:'락사'})
+ ]}
+];
+function city(id){id=id||S.cityId;for(var i=0;i<CITIES.length;i++)if(CITIES[i].id===id)return CITIES[i];return CITIES[0];}
+function place(c,id){for(var i=0;i<c.places.length;i++)if(c.places[i].id===id)return c.places[i];return null;}
+
+var ROLES=['장소 제안자','이동시간 확인자','일정 기록자','조건 점검자'];
+var EVALS=['계획을 묻고 답했다','동의하는 말을 했다','영어 계획문을 썼다','계획 수정에 참여했다'];
+
+/* ---------- demo travel data (시연용 가상 이동시간) ---------- */
+var DEMO={};
+CITIES.forEach(function(c){
+  var out={walk:{},transit:{}};
+  c.places.forEach(function(a){c.places.forEach(function(b){
+    if(a.id===b.id)return;
+    var d=Math.hypot(a.x-b.x,a.y-b.y),key=a.id+'>'+b.id;
+    out.walk[key]=Math.max(3,Math.round(d*c.k));
+    out.transit[key]=8+Math.round(d*0.055)+(hash(c.id+key)%6);
+  });});
+  DEMO[c.id]=out;
+});
+
+/* ---------- state ---------- */
+var S={group:'',cityId:'tokyo',lunchStart:690,members:[],per:{},travel:null,demoGaps:false,view:'edit'};
+var UI={from:null,to:null,mode:null,msg:null,msgOk:false,helpAll:false,dl:false,exportText:'',fileMsg:'',travelMsg:'',resetArm:false};
+for(var i=0;i<4;i++)S.members.push({name:'',role:ROLES[i]});
+
+function per(id){
+  id=id||S.cityId;
+  if(!S.per[id])S.per[id]={plan:[],returnMode:'transit',sentences:[],evals:[],alt:null};
+  return S.per[id];
+}
+var saveT=null;
+function save(){
+  clearTimeout(saveT);
+  saveT=setTimeout(function(){
+    try{
+      localStorage.setItem(STORE,JSON.stringify({group:S.group,cityId:S.cityId,lunchStart:S.lunchStart,members:S.members,per:S.per,travel:S.travel,demoGaps:S.demoGaps}));
+    }catch(e){}
+  },250);
+}
+function sanitize(o){
+  var out={group:'',cityId:'tokyo',lunchStart:690,members:[],per:{},travel:null,demoGaps:false};
+  if(!o||typeof o!=='object')return null;
+  out.group=typeof o.group==='string'?o.group.slice(0,30):'';
+  out.cityId=CITIES.some(function(c){return c.id===o.cityId;})?o.cityId:'tokyo';
+  out.lunchStart=[660,690,720].indexOf(o.lunchStart)>=0?o.lunchStart:690;
+  out.demoGaps=!!o.demoGaps;
+  if(Array.isArray(o.members)&&o.members.length){
+    out.members=o.members.slice(0,6).map(function(m){return {name:String((m&&m.name)||'').slice(0,20),role:ROLES.indexOf(m&&m.role)>=0?m.role:ROLES[0]};});
+  }else{for(var i=0;i<4;i++)out.members.push({name:'',role:ROLES[i]});}
+  CITIES.forEach(function(c){
+    var p=o.per&&o.per[c.id];if(!p||typeof p!=='object')return;
+    var r={plan:[],returnMode:p.returnMode==='walk'?'walk':'transit',sentences:[],evals:[],alt:null};
+    function cleanPlan(arr){
+      var seen={},res=[];
+      (Array.isArray(arr)?arr:[]).forEach(function(it){
+        if(!it)return;
+        if(it.kind==='place'&&place(c,it.placeId)&&it.placeId!=='h'&&!seen[it.placeId]){
+          seen[it.placeId]=1;
+          res.push({kind:'place',placeId:it.placeId,mode:it.mode==='walk'?'walk':'transit',stay:Math.min(240,Math.max(15,Math.round(+it.stay||place(c,it.placeId).stay)))});
+        }
+      });
+      return res;
+    }
+    r.plan=cleanPlan(p.plan);
+    r.sentences=(Array.isArray(p.sentences)?p.sentences:[]).slice(0,6).map(function(s){return String(s||'').slice(0,300);});
+    r.evals=(Array.isArray(p.evals)?p.evals:[]).slice(0,6).map(function(row){return Array.isArray(row)?row.slice(0,4).map(Boolean):[];});
+    if(p.alt&&typeof p.alt==='object'){r.alt={plan:cleanPlan(p.alt.plan),returnMode:p.alt.returnMode==='walk'?'walk':'transit'};}
+    out.per[c.id]=r;
+  });
+  if(o.travel)out.travel=sanitizeTravel(o.travel);
+  return out;
+}
+function sanitizeTravel(t){
+  if(!t||typeof t!=='object'||!t.basis||typeof t.basis.date!=='string'||!t.basis.date.trim())return null;
+  var res={basis:{date:t.basis.date.trim().slice(0,40),condition:String(t.basis.condition||'').slice(0,200)},cities:{}};
+  CITIES.forEach(function(c){
+    var src=(t.cities&&t.cities[c.id])||{},dst={walk:{},transit:{}};
+    ['walk','transit'].forEach(function(m){
+      c.places.forEach(function(a){c.places.forEach(function(b){
+        if(a.id===b.id)return;
+        var key=a.id+'>'+b.id,v=src[m]&&src[m][key];
+        dst[m][key]=(typeof v==='number'&&isFinite(v)&&v>=0)?Math.round(v):(v==='none'?'none':null);
+      });});
+    });
+    res.cities[c.id]=dst;
+  });
+  return res;
+}
+function load(){
+  try{
+    var raw=localStorage.getItem(STORE);
+    if(!raw)return;
+    var o=sanitize(JSON.parse(raw));
+    if(o){S.group=o.group;S.cityId=o.cityId;S.lunchStart=o.lunchStart;S.members=o.members;S.per=o.per;S.travel=o.travel;}
+  }catch(e){}
+}
+
+/* ---------- travel lookup ---------- */
+function getTime(cityId,a,b,mode){
+  if(a===b)return 0;
+  var key=a+'>'+b;
+  if(S.travel){var t=S.travel.cities[cityId];var v=t&&t[mode]?t[mode][key]:null;return v===undefined?null:v;}
+  if(S.demoGaps){
+    if(mode==='transit'&&key==='h>l1')return null;
+    if(mode==='walk'&&key==='l1>l4')return 'none';
+  }
+  return DEMO[cityId][mode][key];
+}
+function basisText(){return S.travel?'사전 조회 기준 예상 이동시간':'시연용 가상 이동시간';}
+function basisFull(){
+  return S.travel?('사전 조회 기준 예상 이동시간 · 기준일 '+S.travel.basis.date+(S.travel.basis.condition?' · '+S.travel.basis.condition:'')):'시연용 가상 이동시간 — 실제 조회값이 아니에요';
+}
+
+/* ---------- schedule computation ---------- */
+function compute(cityId,plan,retMode){
+  var c=city(cityId),t=START,prev='h',ok=true,rows=[],unknown=[],lunchIdx=-1;
+  var tot={move:0,visit:0,meal:0};
+  plan.forEach(function(it,i){
+    var r={i:i,it:it,kind:it.kind};
+    {
+      var p=place(c,it.placeId);
+      r.p=p;r.from=prev;
+      r.opts={walk:getTime(cityId,prev,it.placeId,'walk'),transit:getTime(cityId,prev,it.placeId,'transit')};
+      var seg=r.opts[it.mode];r.seg=seg;
+      if(typeof seg==='number'){r.travelStart=ok?t:null;if(ok)t+=seg;r.arrive=ok?t:null;tot.move+=seg;}
+      else{unknown.push({from:prev,to:it.placeId,mode:it.mode,reason:seg==='none'?'none':'missing'});ok=false;r.travelStart=null;r.arrive=null;}
+      if(p.type==='food'&&lunchIdx===-1){lunchIdx=i;r.lunch=true;}
+      r.start=ok?t:null;r.end=ok?t+it.stay:null;if(ok)t+=it.stay;
+      if(p.type==='food')tot.meal+=it.stay;else tot.visit+=it.stay;
+      prev=it.placeId;
+    }
+    rows.push(r);
+  });
+  var ret=null;
+  if(prev!=='h'){
+    var opts={walk:getTime(cityId,prev,'h','walk'),transit:getTime(cityId,prev,'h','transit')};
+    var sg=opts[retMode];
+    ret={from:prev,opts:opts,seg:sg,depart:ok?t:null,arrive:null};
+    if(typeof sg==='number'){tot.move+=sg;ret.arrive=ok?t+sg:null;}
+    else{unknown.push({from:prev,to:'h',mode:retMode,reason:sg==='none'?'none':'missing'});}
+  }
+  return {rows:rows,ret:ret,tot:tot,unknown:unknown,lunchIdx:lunchIdx,last:prev};
+}
+function lastPlaceId(cityId){
+  var pl=per(cityId).plan,l='h';
+  pl.forEach(function(it){if(it.kind==='place')l=it.placeId;});
+  return l;
+}
+
+/* ---------- map ---------- */
+function orderMap(cityId){
+  var m={},n=0;per(cityId).plan.forEach(function(it){if(it.kind==='place'){n++;m[it.placeId]=n;}});return m;
+}
+function mapSvg(cityId,present){
+  var c=city(cityId),om=orderMap(cityId),mid=present?'ahp':'ah';
+  var s='<svg viewBox="0 0 640 440" class="map" role="group" aria-label="'+esc(c.name)+' 도시 개략도">';
+  s+='<defs><marker id="'+mid+'" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ahead"/></marker></defs>';
+  s+='<rect class="mapbg" width="640" height="440" rx="16"/>'+c.deco;
+  s+='<g class="mapstamp"><rect x="12" y="12" width="92" height="26" rx="8"/><text x="58" y="26" text-anchor="middle" dominant-baseline="central">도시 개략도</text></g>';
+  if(present){
+    var pts=[c.places[0]];
+    per(cityId).plan.forEach(function(it){if(it.kind==='place')pts.push(place(c,it.placeId));});
+    if(pts.length>1){pts.push(c.places[0]);s+='<polyline class="orderline" points="'+pts.map(function(p){return p.x+','+p.y;}).join(' ')+'"/>';}
+  }else if(UI.from&&UI.to){
+    var a=place(c,UI.from),b=place(c,UI.to),dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1;
+    s+='<line class="selline" x1="'+(a.x+dx/L*18)+'" y1="'+(a.y+dy/L*18)+'" x2="'+(b.x-dx/L*20)+'" y2="'+(b.y-dy/L*20)+'" marker-end="url(#'+mid+')"/>';
+  }
+  c.places.forEach(function(p){
+    var cls='node '+p.type+(UI.from===p.id&&!present?' isfrom':'')+(UI.to===p.id&&!present?' isto':'');
+    var anchor=p.x>540?'end':(p.x<70?'start':'middle');
+    var lx=anchor==='end'?p.x+14:(anchor==='start'?p.x-14:p.x);
+    var attrs=present?'':' data-act="pick" data-id="'+p.id+'" tabindex="0" role="button" aria-label="'+esc(p.ko+' 선택')+'"';
+    s+='<g class="'+cls+'"'+attrs+'>';
+    s+='<circle class="ring" cx="'+p.x+'" cy="'+p.y+'" r="21"/><circle class="dot" cx="'+p.x+'" cy="'+p.y+'" r="15"/>';
+    s+='<text class="em" x="'+p.x+'" y="'+(p.y+1)+'">'+p.icon+'</text>';
+    s+='<text class="nl" x="'+lx+'" y="'+(p.y+31)+'" text-anchor="'+anchor+'">'+esc(p.short)+'</text>';
+    if(!present&&UI.from===p.id)s+='<g class="pill"><rect x="'+(p.x-16)+'" y="'+(p.y-38)+'" width="32" height="17" rx="8"/><text x="'+p.x+'" y="'+(p.y-29)+'">출발</text></g>';
+    if(!present&&UI.to===p.id)s+='<g class="pill"><rect x="'+(p.x-16)+'" y="'+(p.y-38)+'" width="32" height="17" rx="8"/><text x="'+p.x+'" y="'+(p.y-29)+'">도착</text></g>';
+    if(om[p.id])s+='<g class="ordb"><circle cx="'+(p.x+14)+'" cy="'+(p.y-14)+'" r="9"/><text x="'+(p.x+14)+'" y="'+(p.y-13)+'">'+om[p.id]+'</text></g>';
+    s+='</g>';
+  });
+  return s+'</svg>';
+}
+
+/* ---------- renderers ---------- */
+function renderTop(){
+  var g=$('#groupName');if(g.value!==S.group)g.value=S.group;
+  $('#cityTabs').innerHTML=CITIES.map(function(c){
+    return '<button class="tab" data-act="city" data-id="'+c.id+'" aria-pressed="'+(c.id===S.cityId)+'">'+c.flag+' '+esc(c.country)+' · '+esc(c.name)+'</button>';
+  }).join('');
+  $('#basisChip').innerHTML='<span class="chip '+(S.travel?'real':'demo')+'">'+esc(S.travel?('사전 조회 기준 · '+S.travel.basis.date):'시연용 가상 이동시간')+'</span>';
+  var v=S.view;
+  $('#viewBtns').innerHTML=v==='edit'
+    ?'<button class="btn" data-act="view" data-v="present">발표 보기</button><button class="btn" data-act="view" data-v="print">인쇄 화면</button>'
+    :'<button class="btn primary" data-act="view" data-v="edit">편집으로 돌아가기</button>'+(v==='print'?'<button class="btn" data-act="doprint">인쇄하기</button>':'');
+  $('#app').setAttribute('data-view',v);
+}
+function renderMap(){
+  $('#mapWrap').innerHTML=mapSvg(S.cityId,false);
+  $('#mapNote').textContent='도시 개략도예요. 점선은 선택한 두 장소를 이을 뿐 실제 도로나 교통 노선이 아니에요. 숫자는 일정의 방문 순서예요.';
+}
+function timeBtns(opts,selMode,act,extra,disableNone){
+  return ['walk','transit'].map(function(m){
+    var v=opts[m];
+    return '<button class="seg '+m+(selMode===m?' on':'')+(typeof v!=='number'?' bad':'')+'" data-act="'+act+'" data-mode="'+m+'"'+extra+(disableNone&&v==='none'?' disabled':'')+' aria-pressed="'+(selMode===m)+'">'+MODE_ICO[m]+' '+MODE_NAME[m]+' '+segLabel(v)+'</button>';
+  }).join('');
+}
+function renderTicket(){
+  var c=city(),h='';
+  if(UI.msg)h+='<p class="msg'+(UI.msgOk?' ok':'')+'">'+esc(UI.msg)+'</p>';
+  if(!UI.from){
+    h+='<p class="hint">① 지도나 목록에서 <b>출발할 장소</b>를 눌러 보세요. 숙소도 좋아요.</p>';
+  }else if(!UI.to){
+    var f=place(c,UI.from);
+    h+='<p class="hint">출발: <b>'+f.icon+' '+esc(f.ko)+'</b><br>② <b>도착할 장소</b>를 선택하세요.</p>';
+  }else{
+    var a=place(c,UI.from),b=place(c,UI.to),cid=S.cityId;
+    var opts={walk:getTime(cid,a.id,b.id,'walk'),transit:getTime(cid,a.id,b.id,'transit')};
+    var last=lastPlaceId(cid),lp=place(c,last);
+    var canAdd=!!UI.mode&&b.id!=='h'&&!per(cid).plan.some(function(it){return it.kind==='place'&&it.placeId===b.id;});
+    h+='<div class="ticket"><div class="tk-route"><span class="tk-place from">'+a.icon+' '+esc(a.ko)+'</span><span class="tk-arrow" aria-label="에서">→</span><span class="tk-place to">'+b.icon+' '+esc(b.ko)+'</span><button class="btn small" data-act="swap">출발·도착 바꾸기</button></div>';
+    h+='<div class="tk-modes">';
+    ['walk','transit'].forEach(function(m){
+      var v=opts[m];
+      h+='<button class="mode '+m+(UI.mode===m?' on':'')+'" data-act="mode" data-mode="'+m+'"'+(v==='none'?' disabled':'')+' aria-pressed="'+(UI.mode===m)+'"><span class="lb">'+MODE_ICO[m]+' '+MODE_NAME[m]+'</span><span class="tm'+(typeof v==='number'?'':' small')+'">'+(typeof v==='number'?v+'분':segLong(v))+'</span></button>';
+    });
+    h+='</div><p class="tk-basis">'+esc(basisFull())+' · '+esc(a.short)+' → '+esc(b.short)+' 방향</p>';
+    if(last!==a.id){
+      var o2={walk:getTime(cid,last,b.id,'walk'),transit:getTime(cid,last,b.id,'transit')};
+      h+='<div class="connect"><b>현재 일정의 마지막 장소에서 이곳까지 연결</b><br>일정에 추가하면 지금 보는 구간이 아니라 <b>'+esc(lp.ko)+' → '+esc(b.ko)+'</b> 이동시간(도보 '+segLabel(o2.walk)+' / 대중교통 '+segLabel(o2.transit)+')이 사용돼요.</div>';
+    }
+    h+='<div class="tk-actions"><button class="btn primary" data-act="add"'+(canAdd?'':' disabled')+'>일정에 추가</button><button class="btn" data-act="newpair">새 구간 비교</button></div>';
+    if(!UI.mode)h+='<p class="small" style="margin:8px 0 0">③ 교통수단을 고르면 일정에 추가할 수 있어요.</p>';
+    else if(b.id==='h')h+='<p class="small" style="margin:8px 0 0">숙소는 출발과 복귀에 자동으로 들어가서 방문지로 추가하지 않아요.</p>';
+    else if(!canAdd)h+='<p class="small" style="margin:8px 0 0">이미 일정에 있는 장소예요.</p>';
+    h+='<p class="small" style="margin:8px 0 0">다른 장소를 누르면 도착지가 바뀌어요. 출발지를 바꾸려면 ‘새 구간 비교’를 눌러요.</p></div>';
+  }
+  $('#ticket').innerHTML=h;
+}
+function renderSchedule(){
+  var c=city(),cid=S.cityId,st=per(cid),r=compute(cid,st.plan,st.returnMode),h='';
+  h+='<h2>하루 일정표</h2>';
+  var late=r.ret&&r.ret.arrive!=null&&r.ret.arrive>LIMIT;
+  h+='<div class="stats">';
+  h+='<div class="stat"><b>총 이동</b><span>'+dur(r.tot.move)+'</span></div><div class="stat"><b>총 방문</b><span>'+dur(r.tot.visit)+'</span></div><div class="stat"><b>식사</b><span>'+dur(r.tot.meal)+'</span></div><div class="stat"><b>장소 수</b><span>'+st.plan.filter(function(x){return x.kind==='place';}).length+'곳</span></div>';
+  var cls='stat wide',txt;
+  if(!r.ret)txt='숙소 복귀 예정 시각: 장소를 추가하면 계산돼요';
+  else if(r.ret.arrive==null){cls+=' unk';txt='숙소 복귀 예정 시각: 확인 필요 (이동시간 없는 구간이 있어요)';}
+  else{if(late)cls+=' late';txt='숙소 복귀 예정 시각 '+hm(r.ret.arrive)+(late?' · '+(r.ret.arrive-LIMIT)+'분 초과':'');}
+  h+='<div class="'+cls+'"><span>'+esc(txt)+'</span></div></div>';
+  if(r.unknown.length)h+='<p class="small" style="margin:-4px 0 8px">합계는 이동시간이 확인된 구간만 더한 값이에요.</p>';
+  h+='<div class="startrow">🏨 09:00 숙소 출발 <span class="small">'+esc(c.places[0].short)+'</span></div>';
+  if(!st.plan.length){
+    h+='<div class="empty" style="margin-top:8px">아직 일정이 비어 있어요.<br>지도에서 두 장소를 눌러 이동시간을 비교한 뒤 ‘일정에 추가’를 눌러 보세요.</div>';
+  }else{
+    h+='<ol class="stops">';
+    r.rows.forEach(function(x,i){
+      var first=i===0,lastI=i===r.rows.length-1;
+      var ctl='<span class="ctl"><button class="ib" data-act="up" data-i="'+i+'" aria-label="위로"'+(first?' disabled':'')+'>↑</button><button class="ib" data-act="down" data-i="'+i+'" aria-label="아래로"'+(lastI?' disabled':'')+'>↓</button><button class="ib" data-act="del" data-i="'+i+'" aria-label="삭제">✕</button></span>';
+      {
+        var p=x.p,from=place(c,x.from);
+        h+='<li class="stop '+p.type+'"><div class="sh"><span class="n">'+(i+1)+'</span><span class="t">'+p.icon+' '+esc(p.ko)+'<small>'+esc(p.en)+'</small></span>'+ctl+'</div>';
+        h+='<div class="leg"><span class="lbl">이동</span>'+timeBtns(x.opts,x.it.mode,'rmode',' data-i="'+i+'"',true)+'<span class="tm2">'+hm(x.travelStart)+' → '+hm(x.arrive)+'</span></div>';
+        h+='<div class="small" style="margin-top:2px">'+esc(from.short)+' → '+esc(p.short)+'</div>';
+        if(typeof x.seg!=='number')h+='<div class="warnline">'+(x.seg==='none'?'이 교통수단으로는 갈 수 없어요. 다른 방법을 골라 보세요.':'이동시간 확인 필요 — 이후 시각을 계산할 수 없어요.')+'</div>';
+        h+='<div class="visit"><span class="lbl">'+(p.type==='food'?(x.lunch?'점심':'식사'):'방문')+'</span><span class="step"><button class="ib" data-act="stay" data-i="'+i+'" data-d="-15" aria-label="15분 줄이기">−</button><b>'+x.it.stay+'분</b><button class="ib" data-act="stay" data-i="'+i+'" data-d="15" aria-label="15분 늘리기">＋</button></span><span class="tm2">'+hm(x.start)+' – '+hm(x.end)+'</span></div></li>';
+      }
+    });
+    if(r.ret){
+      var lp=place(c,r.ret.from);
+      h+='<li class="stop ret"><div class="sh"><span class="n">🏨</span><span class="t">숙소로 복귀<small>'+esc(lp.short)+' → '+esc(c.places[0].short)+'</small></span></div>';
+      h+='<div class="leg"><span class="lbl">이동</span>'+timeBtns(r.ret.opts,st.returnMode,'retmode','',true)+'<span class="tm2">'+hm(r.ret.depart)+' → '+hm(r.ret.arrive)+'</span></div>';
+      if(typeof r.ret.seg!=='number')h+='<div class="warnline">'+(r.ret.seg==='none'?'이 교통수단으로는 돌아올 수 없어요.':'복귀 이동시간 확인 필요')+'</div>';
+      h+='</li>';
+    }
+    h+='</ol>';
+  }
+  h+='<div class="sched-tools"><button class="btn small danger" data-act="reset">'+(UI.resetArm?'정말 지울까요?':'이 도시 일정 지우기')+'</button></div>';
+  $('#schedPanel').innerHTML=h;
+}
+function summaryOf(cid,plan,rm){
+  var r=compute(cid,plan,rm);
+  return {move:r.tot.move,arrive:r.ret?r.ret.arrive:null,hasRet:!!r.ret,count:plan.filter(function(x){return x.kind==='place';}).length,unk:r.unknown.length};
+}
+function renderCompare(){
+  var cid=S.cityId,st=per(cid),cur=summaryOf(cid,st.plan,st.returnMode),alt=st.alt?summaryOf(cid,st.alt.plan,st.alt.returnMode):null;
+  var h='<h2>대안 비교</h2><div class="altbar"><button class="btn small" data-act="savealt">현재 계획을 1안으로 보관</button>'+(alt?'<button class="btn small" data-act="loadalt">1안 불러오기</button><button class="btn small" data-act="delalt">1안 지우기</button>':'')+'</div>';
+  function cell(s,f){return s?f(s):'—';}
+  function arr(s){return s.arrive!=null?hm(s.arrive)+(s.arrive>LIMIT?' (초과 '+(s.arrive-LIMIT)+'분)':''):(s.hasRet?'확인 필요':'—');}
+  if(!alt){h+='<p class="small" style="margin:0">지금 계획을 1안으로 보관한 뒤 순서나 교통수단을 바꾸면 총 이동시간과 복귀시각을 비교할 수 있어요.</p>';}
+  else{
+    h+='<table class="tbl"><tr><th></th><th>1안(보관)</th><th>2안(현재)</th></tr>';
+    h+='<tr><th>방문 장소</th><td>'+alt.count+'곳</td><td>'+cur.count+'곳</td></tr>';
+    h+='<tr><th>총 이동시간</th><td>'+dur(alt.move)+(alt.unk?' +?':'')+'</td><td>'+dur(cur.move)+(cur.unk?' +?':'')+'</td></tr>';
+    h+='<tr><th>복귀 예상</th><td>'+arr(alt)+'</td><td>'+arr(cur)+'</td></tr>';
+    h+='</table>';
+  }
+  $('#compare').innerHTML=h;
+}
+function buildTimeline(cid){
+  var c=city(cid),st=per(cid),r=compute(cid,st.plan,st.returnMode),ev=[];
+  ev.push({t:'09:00',cat:'출발',label:'🏨 '+c.places[0].ko+' 출발',cls:'home'});
+  r.rows.forEach(function(x){
+    var from=place(c,x.from);
+    ev.push({t:hm(x.travelStart)+' – '+hm(x.arrive),cat:'이동 · '+MODE_NAME[x.it.mode]+' '+segLong(x.seg),label:from.short+' → '+x.p.short,cls:'move'});
+    ev.push({t:hm(x.start)+' – '+hm(x.end),cat:(x.p.type==='food'?(x.lunch?'점심 식사':'식사'):'방문')+' '+x.it.stay+'분',label:x.p.icon+' '+x.p.ko+' ('+x.p.en+')',cls:'stay-'+x.p.type});
+  });
+  if(r.ret){
+    ev.push({t:hm(r.ret.depart)+' – '+hm(r.ret.arrive),cat:'이동 · '+MODE_NAME[st.returnMode]+' '+segLong(r.ret.seg),label:place(c,r.ret.from).short+' → 숙소',cls:'move'});
+    ev.push({t:hm(r.ret.arrive),cat:r.ret.arrive!=null&&r.ret.arrive>LIMIT?'복귀 제한 18:00 초과':'복귀',label:'🏨 숙소 도착',cls:'home'});
+  }
+  return {ev:ev,r:r};
+}
+function renderPresent(){
+  var cid=S.cityId,c=city(),tl=buildTimeline(cid),r=tl.r;
+  var h='<div class="pv-head"><h2>'+esc(S.group||'우리 모둠')+'의 하루 여행</h2><h2>'+c.flag+' '+esc(c.name)+'</h2><span class="chip '+(S.travel?'real':'demo')+'">'+esc(basisText())+'</span></div>';
+  h+='<div class="pv-grid"><div><div class="panel">'+mapSvg(cid,true)+'<p class="mapnote">도시 개략도예요. 숫자는 방문 순서이고, 점선은 순서를 이을 뿐 실제 길이 아니에요.</p></div>';
+  h+='<div class="pv-sum"><div class="stat"><b>총 이동</b><span>'+dur(r.tot.move)+'</span></div><div class="stat"><b>방문</b><span>'+dur(r.tot.visit)+'</span></div><div class="stat"><b>식사</b><span>'+dur(r.tot.meal)+'</span></div><div class="stat"><b>복귀 예상</b><span>'+(r.ret?(r.ret.arrive!=null?hm(r.ret.arrive):'확인 필요'):'—')+'</span></div></div>';
+  h+='<div><ul class="pv-tl">'+tl.ev.map(function(e){return '<li class="'+e.cls+'"><span class="tt">'+esc(e.t)+'</span><span>'+esc(e.label)+'<span class="cat">'+esc(e.cat)+'</span></span></li>';}).join('')+'</ul></div></div>';
+  $('#presentView').innerHTML=h;
+}
+function renderPrint(){
+  var cid=S.cityId,c=city(),tl=buildTimeline(cid);
+  var h='<div class="printpage"><div class="row noprint"><button class="btn primary" data-act="doprint">인쇄하기</button><span class="small">인쇄가 열리지 않으면 브라우저 메뉴의 인쇄(Ctrl+P)를 사용해 주세요.</span></div>';
+  h+='<h2>'+esc(S.group||'우리 모둠')+' · '+c.flag+' '+esc(c.country)+' '+esc(c.name)+' 하루 여행 일정표</h2><p class="small">'+esc(basisFull())+' · 출발 09:00 · 복귀 제한 18:00 · 도시 개략도 기준</p>';
+  h+='<table class="tbl"><tr><th style="width:140px">시간</th><th>일정</th><th>분류</th></tr>'+tl.ev.map(function(e){return '<tr><td>'+esc(e.t)+'</td><td>'+esc(e.label)+'</td><td>'+esc(e.cat)+'</td></tr>';}).join('')+'</table>';
+  h+='<h3>요약</h3><p>총 이동 '+dur(tl.r.tot.move)+' · 방문 '+dur(tl.r.tot.visit)+' · 식사 '+dur(tl.r.tot.meal)+(tl.r.ret&&tl.r.ret.arrive!=null?' · 복귀 예상 '+hm(tl.r.ret.arrive):' · 복귀 예상 확인 필요')+'</p>';
+  h+='</div>';
+  $('#printView').innerHTML=h;
+}
+function renderAll(){
+  renderTop();
+  if(S.view==='edit'){
+    renderMap();renderTicket();renderSchedule();renderCompare();
+  }else if(S.view==='present'){renderPresent();}
+  else{renderPrint();}
+}
+/* refresh the parts that depend on plan/selection without touching text inputs */
+function refreshPlanParts(){
+  renderMap();renderTicket();renderSchedule();renderCompare();
+}
+
+/* ---------- actions ---------- */
+var SAME='같은 장소를 골랐어요. 이동시간은 0분이에요. 같은 장소를 두 번 방문하는 일정은 만들 수 없어요.';
+function pick(id){
+  var f=UI.from,t=UI.to;
+  if(!f){UI.from=id;UI.to=null;UI.mode=null;UI.msg=null;}
+  else if(!t){
+    if(id===f){UI.msg=SAME;UI.msgOk=false;}
+    else{UI.to=id;UI.mode=null;UI.msg=null;}
+  }else{
+    if(id===f){UI.msg=SAME;UI.msgOk=false;}
+    else if(id!==t){UI.to=id;UI.mode=null;UI.msg=null;}
+  }
+  refreshPlanParts();
+}
+function addToPlan(){
+  var cid=S.cityId,st=per(cid),c=city();
+  if(!UI.to||!UI.mode)return;
+  var b=place(c,UI.to);
+  if(b.id==='h')return;
+  if(st.plan.some(function(it){return it.kind==='place'&&it.placeId===b.id;})){UI.msg='이미 일정에 있는 장소예요.';UI.msgOk=false;renderTicket();return;}
+  var last=lastPlaceId(cid),v=getTime(cid,last,b.id,UI.mode);
+  if(v==='none'){UI.msg='이 구간은 '+MODE_NAME[UI.mode]+'(으)로 갈 수 없어요. 다른 교통수단을 골라 보세요.';UI.msgOk=false;renderTicket();return;}
+  st.plan.push({kind:'place',placeId:b.id,mode:UI.mode,stay:b.stay});
+  UI.msg=b.ko+'을(를) 일정에 추가했어요.';UI.msgOk=true;
+  UI.from=b.id;UI.to=null;UI.mode=null;
+  save();refreshPlanParts();
+}
+function stopClick(e){return e.target.closest('[data-stop]');}
+document.addEventListener('click',function(e){
+  if(stopClick(e))return;
+  var el=e.target.closest('[data-act]');if(!el)return;
+  var a=el.getAttribute('data-act'),i=+el.getAttribute('data-i'),cid=S.cityId,st=per(cid);
+  if(a!=='reset'&&UI.resetArm){UI.resetArm=false;}
+  switch(a){
+    case 'city':S.cityId=el.getAttribute('data-id');UI.from=UI.to=UI.mode=null;UI.msg=null;UI.resetArm=false;save();renderAll();break;
+    case 'pick':pick(el.getAttribute('data-id'));break;
+    case 'swap':var t=UI.from;UI.from=UI.to;UI.to=t;UI.msg=null;refreshPlanParts();break;
+    case 'newpair':UI.from=UI.to=UI.mode=null;UI.msg=null;refreshPlanParts();break;
+    case 'mode':UI.mode=el.getAttribute('data-mode');UI.msg=null;renderTicket();break;
+    case 'add':addToPlan();break;
+    case 'up':if(i>0){var x=st.plan[i];st.plan[i]=st.plan[i-1];st.plan[i-1]=x;save();refreshPlanParts();}break;
+    case 'down':if(i<st.plan.length-1){var y=st.plan[i];st.plan[i]=st.plan[i+1];st.plan[i+1]=y;save();refreshPlanParts();}break;
+    case 'del':st.plan.splice(i,1);save();refreshPlanParts();break;
+    case 'rmode':st.plan[i].mode=el.getAttribute('data-mode');save();renderSchedule();renderCompare();break;
+    case 'retmode':st.returnMode=el.getAttribute('data-mode');save();renderSchedule();renderCompare();break;
+    case 'stay':st.plan[i].stay=Math.min(240,Math.max(15,st.plan[i].stay+(+el.getAttribute('data-d'))));save();renderSchedule();renderCompare();break;
+    case 'reset':
+      if(UI.resetArm){st.plan=[];UI.resetArm=false;UI.from=UI.to=UI.mode=null;UI.msg=null;save();refreshPlanParts();}
+      else{UI.resetArm=true;renderSchedule();setTimeout(function(){if(UI.resetArm){UI.resetArm=false;if(S.view==='edit')renderSchedule();}},4000);}
+      break;
+    case 'savealt':st.alt={plan:JSON.parse(JSON.stringify(st.plan)),returnMode:st.returnMode};save();renderCompare();break;
+    case 'loadalt':if(st.alt){st.plan=JSON.parse(JSON.stringify(st.alt.plan));st.returnMode=st.alt.returnMode;save();refreshPlanParts();}break;
+    case 'delalt':st.alt=null;save();renderCompare();break;
+    case 'view':S.view=el.getAttribute('data-v');renderAll();window.scrollTo(0,0);break;
+    case 'doprint':try{window.print();}catch(err){}break;
+  }
+});
+document.addEventListener('keydown',function(e){
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.node,.pcard')){
+    e.preventDefault();pick(e.target.getAttribute('data-id'));
+  }
+});
+document.addEventListener('input',function(e){
+  var t=e.target,f=t.getAttribute&&t.getAttribute('data-f'),i=+(t.getAttribute&&t.getAttribute('data-i'));
+  if(t.id==='groupName'){S.group=t.value;save();return;}
+});
+document.addEventListener('change',function(e){
+  var t=e.target,f=t.getAttribute&&t.getAttribute('data-f'),i=+(t.getAttribute&&t.getAttribute('data-i'));
+});
+/* ---------- init ---------- */
+load();
+renderAll();
+})();
+</script>
+</body>
+</html>
